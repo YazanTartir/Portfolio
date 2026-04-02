@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Yazan Tartir — Chemical Engineer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f5f2eb;
+      --ink: #1a1a18;
+      --ink-muted: #5a5a52;
+      --accent: #b5460f;
+      --accent-light: #e8d5c4;
+      --rule: #c8c0b0;
+      --card-bg: #faf8f3;
+      --mono: 'IBM Plex Mono', monospace;
+      --serif: 'Playfair Display', serif;
+      --sans: 'IBM Plex Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise texture overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.5;
+    }
+
+    /* ── Navigation ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 4rem;
+      background: rgba(245, 242, 235, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      color: var(--ink-muted);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── Hero ── */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding-top: 80px;
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 6rem 4rem 6rem 4rem;
+      border-right: 1px solid var(--rule);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.9s ease 0.1s forwards;
+    }
+
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-name {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 5vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-name em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      color: var(--ink-muted);
+      max-width: 38ch;
+      margin-bottom: 2.5rem;
+      line-height: 1.8;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.75rem 1.75rem;
+      border: 1px solid var(--ink);
+      color: var(--ink);
+      text-decoration: none;
+      transition: all 0.2s;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .btn:hover { background: var(--ink); color: var(--bg); }
+
+    .btn-accent {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .btn-accent:hover { background: #8f3508; border-color: #8f3508; color: #fff; }
+
+    .hero-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 4rem;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.9s ease 0.3s forwards;
+    }
+
+    .lang-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 3rem;
+    }
+
+    .pill {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--rule);
+      color: var(--ink-muted);
+      border-radius: 999px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+    }
+
+    .stat {
+      background: var(--card-bg);
+      padding: 1.5rem;
+    }
+
+    .stat-num {
+      font-family: var(--serif);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    /* ── Sections ── */
+    section {
+      padding: 6rem 4rem;
+      border-top: 1px solid var(--rule);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-num {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    /* ── About ── */
+    #about .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+    }
+
+    .about-body p {
+      color: var(--ink-muted);
+      margin-bottom: 1.2rem;
+      font-size: 1rem;
+    }
+
+    .about-body p strong {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .skills-list {
+      list-style: none;
+    }
+
+    .skills-list li {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--rule);
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+    }
+
+    .skills-list li::before {
+      content: '→';
+      color: var(--accent);
+      font-size: 0.75rem;
+    }
+
+    /* ── Projects ── */
+    #projects .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+    }
+
+    .project-card {
+      background: var(--card-bg);
+      padding: 2rem;
+      transition: background 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .project-card:hover { background: var(--accent-light); }
+
+    .project-tag {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .project-title {
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .project-desc {
+      font-size: 0.875rem;
+      color: var(--ink-muted);
+      flex: 1;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-link {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .project-link:hover { text-decoration: underline; }
+
+    /* ── Writing ── */
+    #writing .writing-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border: 1px solid var(--rule);
+    }
+
+    .essay-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 2rem;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--rule);
+      transition: background 0.2s;
+    }
+
+    .essay-row:last-child { border-bottom: none; }
+    .essay-row:hover { background: var(--accent-light); }
+
+    .essay-num {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--rule);
+      width: 2ch;
+    }
+
+    .essay-title {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-style: italic;
+    }
+
+    .essay-date {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: var(--ink-muted);
+      white-space: nowrap;
+    }
+
+    .writing-cta {
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    /* ── Now ── */
+    #now .now-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+    }
+
+    .now-item {
+      background: var(--card-bg);
+      padding: 2rem;
+    }
+
+    .now-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    .now-text {
+      font-size: 0.95rem;
+      color: var(--ink-muted);
+      line-height: 1.7;
+    }
+
+    /* ── Contact ── */
+    #contact {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 6rem 4rem;
+    }
+
+    #contact .section-header { justify-content: center; }
+
+    .contact-sub {
+      color: var(--ink-muted);
+      max-width: 45ch;
+      margin-bottom: 2.5rem;
+    }
+
+    .contact-links {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 2rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer p {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: var(--ink-muted);
+    }
+
+    /* ── Animation ── */
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.2rem; }
+
+      #hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-left { padding: 7rem 1.5rem 3rem; border-right: none; border-bottom: 1px solid var(--rule); }
+      .hero-right { padding: 3rem 1.5rem; }
+
+      section { padding: 4rem 1.5rem; }
+
+      #about .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      #projects .projects-grid { grid-template-columns: 1fr; }
+      #now .now-grid { grid-template-columns: 1fr; }
+
+      .essay-row { grid-template-columns: 1fr; gap: 0.3rem; }
+      .essay-num { display: none; }
+
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#hero" class="nav-logo">YourName.github.io</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#writing">Writing</a></li>
+      <li><a href="#now">Now</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-left">
+      <p class="hero-tag">Chemical Engineer · Writer · Builder</p>
+      <h1 class="hero-name">Yazan<br/><em>Tartir</em></h1>
+      <p class="hero-desc">
+        Chemical engineering student with a focus on industry applications.
+        I also write weekly essays, build language learning tools, and study
+        Spanish and Arabic — because the best engineers communicate clearly
+        and think across disciplines.
+      </p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn btn-accent">View Projects</a>
+        <a href="#contact" class="btn">Get in Touch</a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="lang-pills">
+        <span class="pill">English — Native</span>
+        <span class="pill">Spanish — Learning</span>
+        <span class="pill">Arabic — Learning</span>
+        <span class="pill">GDScript / Godot</span>
+        <span class="pill">Chemical Eng.</span>
+      </div>
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="stat-num">5+</div>
+          <div class="stat-label">Essays Published</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">2</div>
+          <div class="stat-label">Games in Dev</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">1</div>
+          <div class="stat-label">Novel in Progress</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">2</div>
+          <div class="stat-label">Languages Studied</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-header reveal">
+      <span class="section-num">01</span>
+      <h2 class="section-title">About</h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-body reveal">
+        <p>
+          I'm a <strong>Chemical Engineering student</strong> preparing for a career
+          in industry — oil &amp; gas, pharma, or manufacturing. My coursework gives me
+          a rigorous technical foundation, but I've always believed that the engineers
+          who stand out are the ones who can think, write, and communicate across
+          different domains.
+        </p>
+        <p>
+          My side projects reflect that belief. I write a <strong>weekly Substack essay</strong>
+          to sharpen my thinking and communication. I'm building <strong>language learning
+          video games</strong> in Godot to develop coding skills while exploring how people
+          acquire new languages. I'm also writing a novel and producing educational
+          YouTube content on Spanish and Arabic grammar.
+        </p>
+        <p>
+          These aren't distractions from engineering — they're evidence that I can learn
+          hard things independently, ship creative work consistently, and communicate
+          complex ideas clearly.
+        </p>
+      </div>
+      <div class="reveal">
+        <ul class="skills-list">
+          <li>Chemical Engineering (B.S., In Progress)</li>
+          <li>Technical Writing &amp; Long-form Essays</li>
+          <li>Game Development — Godot / GDScript</li>
+          <li>Spanish Language (Intermediate)</li>
+          <li>Arabic Language (Beginner–Intermediate)</li>
+          <li>Educational Content Creation</li>
+          <li>GitHub &amp; Version Control</li>
+          <li>Independent Research &amp; Self-directed Learning</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-header reveal">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Projects</h2>
+    </div>
+    <div class="projects-grid">
+
+      <div class="project-card reveal">
+        <p class="project-tag">Writing</p>
+        <h3 class="project-title">Weekly Substack Essays</h3>
+        <p class="project-desc">
+          A weekly newsletter exploring ideas at the intersection of language,
+          culture, engineering, and personal development. Published consistently
+          every week.
+        </p>
+        <a href="https://theinternalhijrah.substack.com" class="project-link" target="_blank">Read on Substack →</a>
+      </div>
+
+      <div class="project-card reveal">
+        <p class="project-tag">Fiction</p>
+        <h3 class="project-title">Bilal & Omar</h3>
+        <p class="project-desc">
+          A novel-in-progress following two characters through a story of personal
+          transformation. A long-form creative challenge in sustained narrative
+          and character development.
+        </p>
+        <a href="#writing" class="project-link">Updates via Writing →</a>
+      </div>
+
+      <div class="project-card reveal">
+        <p class="project-tag">Game Dev · GitHub</p>
+        <h3 class="project-title">Spanish Learning Game</h3>
+        <p class="project-desc">
+          A language learning video game built in the Godot engine. Designed to
+          make Spanish grammar acquisition interactive and engaging. Source
+          available on GitHub.
+        </p>
+        <a href="https://github.com/yourusername" class="project-link" target="_blank">View on GitHub →</a>
+      </div>
+
+      <div class="project-card reveal">
+        <p class="project-tag">Game Dev · GitHub</p>
+        <h3 class="project-title">Arabic Learning Game</h3>
+        <p class="project-desc">
+          A companion game to the Spanish project, tackling the unique challenges
+          of Arabic script and grammar through interactive gameplay mechanics.
+        </p>
+        <a href="https://github.com/yourusername" class="project-link" target="_blank">View on GitHub →</a>
+      </div>
+
+      <div class="project-card reveal">
+        <p class="project-tag">YouTube · Education</p>
+        <h3 class="project-title">Spanish Grammar Series</h3>
+        <p class="project-desc">
+          A planned YouTube series breaking down Spanish grammar concepts clearly
+          and systematically — built for learners who want structure over
+          immersion-only methods.
+        </p>
+        <a href="https://youtube.com/@yourchannel" class="project-link" target="_blank">YouTube Channel →</a>
+      </div>
+
+      <div class="project-card reveal">
+        <p class="project-tag">YouTube · Education</p>
+        <h3 class="project-title">Arabic Grammar Series</h3>
+        <p class="project-desc">
+          A structured YouTube series on Modern Standard Arabic grammar, designed
+          to demystify one of the world's most linguistically rich and complex
+          languages.
+        </p>
+        <a href="https://youtube.com/@yourchannel" class="project-link" target="_blank">YouTube Channel →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WRITING -->
+  <section id="writing">
+    <div class="section-header reveal">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Writing</h2>
+    </div>
+    <div class="writing-list reveal">
+      <div class="essay-row">
+        <span class="essay-num">01</span>
+        <span class="essay-title">Replace with your best essay title</span>
+        <span class="essay-date">2025</span>
+      </div>
+      <div class="essay-row">
+        <span class="essay-num">02</span>
+        <span class="essay-title">Replace with your second essay title</span>
+        <span class="essay-date">2025</span>
+      </div>
+      <div class="essay-row">
+        <span class="essay-num">03</span>
+        <span class="essay-title">Replace with your third essay title</span>
+        <span class="essay-date">2025</span>
+      </div>
+      <div class="essay-row">
+        <span class="essay-num">04</span>
+        <span class="essay-title">Replace with your fourth essay title</span>
+        <span class="essay-date">2024</span>
+      </div>
+      <div class="essay-row">
+        <span class="essay-num">05</span>
+        <span class="essay-title">Replace with your fifth essay title</span>
+        <span class="essay-date">2024</span>
+      </div>
+    </div>
+    <div class="writing-cta reveal">
+      <a href="https://theinternalhijrah.substack.com" class="btn" target="_blank">Read All Essays on Substack</a>
+    </div>
+  </section>
+
+  <!-- NOW -->
+  <section id="now">
+    <div class="section-header reveal">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Now</h2>
+    </div>
+    <div class="now-grid reveal">
+      <div class="now-item">
+        <p class="now-label">Engineering</p>
+        <p class="now-text">Completing my Chemical Engineering degree, with coursework in Mechanics of Materials and Dynamics. Looking ahead to internship and industry opportunities in pharma and energy.</p>
+      </div>
+      <div class="now-item">
+        <p class="now-label">Writing</p>
+        <p class="now-text">Publishing weekly on Substack. Currently drafting early chapters of <em>Bilal &amp; Omar</em>, a personal transformation novel.</p>
+      </div>
+      <div class="now-item">
+        <p class="now-label">Building</p>
+        <p class="now-text">Developing two language learning video games in Godot — one for Spanish, one for Arabic. Both are open-source and available on GitHub.</p>
+      </div>
+      <div class="now-item">
+        <p class="now-label">Languages</p>
+        <p class="now-text">Actively studying Spanish and Arabic. Planning YouTube grammar series for both languages to deepen my own understanding through teaching.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="section-header reveal">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Contact</h2>
+    </div>
+    <p class="contact-sub reveal">
+      Open to internship opportunities, industry conversations, and collaboration
+      on language or writing projects.
+    </p>
+    <div class="contact-links reveal">
+      <a href="mailto:you@email.com" class="btn btn-accent">Email Me</a>
+      <a href="https://linkedin.com/in/yourname" class="btn" target="_blank">LinkedIn</a>
+      <a href="https://github.com/yourusername" class="btn" target="_blank">GitHub</a>
+      <a href="https://theinternalhijrah.substack.com" class="btn" target="_blank">Substack</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 Yazan Tartir. Hosted on GitHub Pages.</p>
+    <p>Chemical Engineer · Writer · Builder</p>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
